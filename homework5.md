@@ -463,16 +463,16 @@ t_test_1
     ## # A tibble: 5,000 × 2
     ##    estimate p.value
     ##       <dbl>   <dbl>
-    ##  1   -0.603  0.482 
-    ##  2    0.812  0.392 
-    ##  3    0.315  0.734 
-    ##  4   -0.862  0.373 
-    ##  5    1.83   0.0601
-    ##  6   -0.989  0.346 
-    ##  7    0.757  0.330 
-    ##  8   -0.671  0.297 
-    ##  9   -0.442  0.553 
-    ## 10    0.557  0.501 
+    ##  1    1.10  0.328  
+    ##  2    0.471 0.649  
+    ##  3    0.839 0.447  
+    ##  4   -0.598 0.407  
+    ##  5    1.49  0.0970 
+    ##  6   -2.11  0.00350
+    ##  7   -0.398 0.687  
+    ##  8   -0.989 0.161  
+    ##  9   -0.909 0.300  
+    ## 10   -0.635 0.478  
     ## # … with 4,990 more rows
 
 #### Repeat the above for μ={1,2,3,4,5,6} by iteration.
@@ -495,22 +495,19 @@ t_test_2 =
 on the x axis. Describe the association between effect size and power.
 
 ``` r
-t_test_2_data =
+plot_2 =
   t_test_2 %>%
     group_by(miu) %>% 
     summarise(
-      count_2 = sum(reject_HO == 1))
-
-plot_2 = 
-  t_test_2_data %>%
-  ggplot(aes(x = miu, y = count_2/5000)) +
-  geom_point() +
-  geom_line() +
-  labs(
-    x = "True value of mean",
-    y = "Power of the test",
-    title = "Association between effect size and power") +
-    theme(plot.title = element_text(size = 10),text = element_text(size = 6)) 
+      count_2 = sum(reject_HO == 1)) %>%
+    ggplot(aes(x = miu, y = count_2/5000)) +
+    geom_point() +
+    geom_line() +
+    labs(
+      x = "True value of mean",
+      y = "Power of the test",
+      title = "Association between effect size and power") +
+      theme(plot.title = element_text(size = 15),text = element_text(size = 10)) 
 plot_2
 ```
 
@@ -520,3 +517,44 @@ value of mean increases.There is a positive association between effect
 size and power.
 
 #### Make a plot showing the average estimate of estimated μ on the y axis and the true value of μ on the x axis.
+
+``` r
+plot_all = 
+  t_test_2 %>%
+    group_by(miu) %>% 
+      summarise(
+        mean_miu = mean(estimate)) %>% 
+    ggplot(aes(x = miu, y = mean_miu)) +
+    geom_point() +
+    geom_line() +
+    labs(
+      x = "True value of mean",
+      y = "Average estimated value of mean",
+      title = "Association between estimated value and true value of mean") +
+      theme(plot.title = element_text(size = 15),text = element_text(size = 10)) 
+plot_all
+```
+
+<img src="homework5_files/figure-gfm/unnamed-chunk-15-1.png" width="90%" />
+
+#### Make a second plot of the average estimate of μ only in samples for which the null was rejected on the y axis and the true value of μ on the x axis. Is the sample average of μ across tests for which the null is rejected approximately equal to the true value of μ? Why or why not?
+
+``` r
+plot_rejected_HO = 
+  t_test_2 %>%
+    group_by(miu) %>% 
+    filter(reject_HO == 1) %>% 
+      summarise(
+        mean_miu_rejected_HO = mean(estimate)) %>% 
+    ggplot(aes(x = miu, y = mean_miu_rejected_HO)) +
+    geom_point() +
+    geom_line() +
+    labs(
+      x = "True value of mean",
+      y = "Average estimated value of mean",
+      title = "Association between estimated value and true value of mean when H0 was rejected") +
+      theme(plot.title = element_text(size = 15),text = element_text(size = 10)) 
+plot_rejected_HO
+```
+
+<img src="homework5_files/figure-gfm/unnamed-chunk-16-1.png" width="90%" />

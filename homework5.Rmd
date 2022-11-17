@@ -202,33 +202,57 @@ t_test_2 =
 #### Make a plot showing the proportion of times the null was rejected (the power of the test) on the y axis and the true value of μ
 on the x axis. Describe the association between effect size and power.
 ```{r}
-t_test_2_data =
+plot_2 =
   t_test_2 %>%
     group_by(miu) %>% 
     summarise(
-      count_2 = sum(reject_HO == 1))
-
-plot_2 = 
-  t_test_2_data %>%
-  ggplot(aes(x = miu, y = count_2/5000)) +
-  geom_point() +
-  geom_line() +
-  labs(
-    x = "True value of mean",
-    y = "Power of the test",
-    title = "Association between effect size and power") +
-    theme(plot.title = element_text(size = 10),text = element_text(size = 6)) 
+      count_2 = sum(reject_HO == 1)) %>%
+    ggplot(aes(x = miu, y = count_2/5000)) +
+    geom_point() +
+    geom_line() +
+    labs(
+      x = "True value of mean",
+      y = "Power of the test",
+      title = "Association between effect size and power") +
+      theme(plot.title = element_text(size = 15),text = element_text(size = 10)) 
 plot_2
 ```
 According to the figure, the power of the test increases as the true value of mean increases.There is a positive association between effect size and power.
 
 #### Make a plot showing the average estimate of estimated μ on the y axis and the true value of μ on the x axis. 
 ```{r}
-
+plot_all = 
+  t_test_2 %>%
+    group_by(miu) %>% 
+      summarise(
+        mean_miu = mean(estimate)) %>% 
+    ggplot(aes(x = miu, y = mean_miu)) +
+    geom_point() +
+    geom_line() +
+    labs(
+      x = "True value of mean",
+      y = "Average estimated value of mean",
+      title = "Association between estimated value and true value of mean") +
+      theme(plot.title = element_text(size = 15),text = element_text(size = 10)) 
+plot_all
 ```
 
 #### Make a second plot of the average estimate of μ only in samples for which the null was rejected on the y axis and the true value of μ on the x axis. Is the sample average of μ across tests for which the null is rejected approximately equal to the true value of μ? Why or why not?
 ```{r}
-
+plot_rejected_HO = 
+  t_test_2 %>%
+    group_by(miu) %>% 
+    filter(reject_HO == 1) %>% 
+      summarise(
+        mean_miu_rejected_HO = mean(estimate)) %>% 
+    ggplot(aes(x = miu, y = mean_miu_rejected_HO)) +
+    geom_point() +
+    geom_line() +
+    labs(
+      x = "True value of mean",
+      y = "Average estimated value of mean",
+      title = "Association between estimated value and true value of mean when H0 was rejected") +
+      theme(plot.title = element_text(size = 15),text = element_text(size = 10)) 
+plot_rejected_HO
 ```
 
