@@ -239,7 +239,8 @@ homicide_df =
 #### Summarize within cities to obtain the total number of homicides.
 
 ``` r
-homicide_total = homicide_df %>% 
+homicide_total = 
+  homicide_df %>% 
   group_by(city_state) %>% 
   count(city_state) %>% 
   summarize(n) 
@@ -248,9 +249,11 @@ homicide_total = homicide_df %>%
 #### Summarize within cities to obtain the number of unsolved homicides (those for which the disposition is “Closed without arrest” or “Open/No arrest”).
 
 ``` r
-homicide_unsolved = homicide_df %>% 
+homicide_unsolved = 
+  homicide_df %>% 
   mutate(
-    homicide_statu =  ifelse(disposition != "Closed by arrest", "unsolved", "solved")) %>%
+    homicide_statu =  ifelse(disposition != "Closed by arrest", "unsolved", "solved")
+    ) %>%
   group_by(city_state) %>% 
   summarize(
     n_unsolved = sum(homicide_statu == "unsolved"),
@@ -320,7 +323,8 @@ this data, it could be removed to create a more tidy database.
 #### Estimate the proportion of homicides that are unsolved for the city of Baltimore, MD.
 
 ``` r
-homicide_unsolved = homicide_unsolved %>%
+homicide_unsolved = 
+  homicide_unsolved %>%
   filter(city_state != "Tulsa, AL") 
 
 Bal_data = 
@@ -331,16 +335,17 @@ Bal_test =
   prop.test(
     x = Bal_data %>% pull(n_unsolved),
     n = Bal_data %>% pull(n_total),
-    alternative = c("two.sided"), conf.level = 0.95) %>% 
-  broom::tidy() 
+    alternative = c("two.sided"), conf.level = 0.95
+    ) %>% 
+  broom::tidy() %>%
+  select(estimate,conf.low,conf.high)
 Bal_test
 ```
 
-    ## # A tibble: 1 × 8
-    ##   estimate statistic  p.value parameter conf.low conf.high method        alter…¹
-    ##      <dbl>     <dbl>    <dbl>     <int>    <dbl>     <dbl> <chr>         <chr>  
-    ## 1    0.646      239. 6.46e-54         1    0.628     0.663 1-sample pro… two.si…
-    ## # … with abbreviated variable name ¹​alternative
+    ## # A tibble: 1 × 3
+    ##   estimate conf.low conf.high
+    ##      <dbl>    <dbl>     <dbl>
+    ## 1    0.646    0.628     0.663
 
 According to the the resulting tidy dataframe, the estimated proportion
 of homicides that are unsolved for the city of Baltimore, MD is
@@ -414,3 +419,25 @@ All_test %>%
 | Tampa, FL          | 0.4567308 | 0.3881009 | 0.5269851 |
 | Tulsa, OK          | 0.3310463 | 0.2932349 | 0.3711192 |
 | Washington, DC     | 0.4379182 | 0.4112495 | 0.4649455 |
+
+#### Create a plot that shows the estimates and CIs for each city.
+
+``` r
+All_test %>%
+  mutate(
+    city_state = fct_reorder(city_state, estimate)
+    ) %>% 
+  ggplot(aes(x = city_state, y = estimate)) +
+  geom_point(size = 1) + 
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high), width = 0.5) +
+  coord_flip() +
+  labs(
+    x = "City, State",
+    y = "Estimate proportion", 
+    title = "The estimated proportion of unsolved homicides in 50 cities") +
+  theme(plot.title = element_text(size = 10),text = element_text(size = 6)) 
+```
+
+<img src="homework5_files/figure-gfm/unnamed-chunk-11-1.png" width="90%" />
+
+## Problem 3
