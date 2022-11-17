@@ -9,7 +9,7 @@ output: github_document
 library(tidyverse)
 library(viridis)
 library(purrr)
-library(tidyr)
+library(gridExtra)
 library(broom)
 
 knitr::opts_chunk$set(
@@ -217,7 +217,7 @@ plot_2 =
       theme(plot.title = element_text(size = 15),text = element_text(size = 10)) 
 plot_2
 ```
-According to the figure, the power of the test increases as the true value of mean increases.There is a positive association between effect size and power.
+According to the figure, the power of the test increases as the true value of mean increases, which means there is a positive association between effect size and power. While when the true value of mean is getting bigger, the increase of power of the test gradually slows down.
 
 #### Make a plot showing the average estimate of estimated μ on the y axis and the true value of μ on the x axis. 
 ```{r}
@@ -233,7 +233,7 @@ plot_all =
       x = "True value of mean",
       y = "Average estimated value of mean",
       title = "Association between estimated value and true value of mean") +
-      theme(plot.title = element_text(size = 15),text = element_text(size = 10)) 
+      theme(plot.title = element_text(size = 8),text = element_text(size = 8)) 
 plot_all
 ```
 
@@ -252,7 +252,11 @@ plot_rejected_HO =
       x = "True value of mean",
       y = "Average estimated value of mean",
       title = "Association between estimated value and true value of mean when H0 was rejected") +
-      theme(plot.title = element_text(size = 15),text = element_text(size = 10)) 
+      theme(plot.title = element_text(size = 8),text = element_text(size = 8)) 
 plot_rejected_HO
+grid.arrange(plot_all, plot_rejected_HO, ncol = 2)
 ```
 
+According to the figures above, the sample average of μ across tests for which the null is rejected is not approximately equal to the true value of μ.
+When the true value of mean is relatively small (1,2,3), the average estimated values of mean in samples for which the null was rejected are less than the overall values. When the true value of mean is relatively getting bigger (4,5,6), the average estimated values of mean in samples for which the null was rejected are close to the overall value campared with the equivalent with small true values, though still less than the overall values.
+Combined with the previous picture, I think this is related to the power of the test. When the true value of mean is getting bigger, the increase of power of the test gradually slows down. More false null hypotheses are rejected when true values of means are getting bigger.
