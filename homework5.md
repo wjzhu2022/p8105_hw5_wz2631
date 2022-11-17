@@ -243,63 +243,7 @@ homicide_total = homicide_df %>%
   group_by(city_state) %>% 
   count(city_state) %>% 
   summarize(n) 
-homicide_total %>% 
-  knitr::kable()
 ```
-
-| city_state         |    n |
-|:-------------------|-----:|
-| Albuquerque, NM    |  378 |
-| Atlanta, GA        |  973 |
-| Baltimore, MD      | 2827 |
-| Baton Rouge, LA    |  424 |
-| Birmingham, AL     |  800 |
-| Boston, MA         |  614 |
-| Buffalo, NY        |  521 |
-| Charlotte, NC      |  687 |
-| Chicago, IL        | 5535 |
-| Cincinnati, OH     |  694 |
-| Columbus, OH       | 1084 |
-| Dallas, TX         | 1567 |
-| Denver, CO         |  312 |
-| Detroit, MI        | 2519 |
-| Durham, NC         |  276 |
-| Fort Worth, TX     |  549 |
-| Fresno, CA         |  487 |
-| Houston, TX        | 2942 |
-| Indianapolis, IN   | 1322 |
-| Jacksonville, FL   | 1168 |
-| Kansas City, MO    | 1190 |
-| Las Vegas, NV      | 1381 |
-| Long Beach, CA     |  378 |
-| Los Angeles, CA    | 2257 |
-| Louisville, KY     |  576 |
-| Memphis, TN        | 1514 |
-| Miami, FL          |  744 |
-| Milwaukee, wI      | 1115 |
-| Minneapolis, MN    |  366 |
-| Nashville, TN      |  767 |
-| New Orleans, LA    | 1434 |
-| New York, NY       |  627 |
-| Oakland, CA        |  947 |
-| Oklahoma City, OK  |  672 |
-| Omaha, NE          |  409 |
-| Philadelphia, PA   | 3037 |
-| Phoenix, AZ        |  914 |
-| Pittsburgh, PA     |  631 |
-| Richmond, VA       |  429 |
-| Sacramento, CA     |  376 |
-| San Antonio, TX    |  833 |
-| San Bernardino, CA |  275 |
-| San Diego, CA      |  461 |
-| San Francisco, CA  |  663 |
-| Savannah, GA       |  246 |
-| St. Louis, MO      | 1677 |
-| Stockton, CA       |  444 |
-| Tampa, FL          |  208 |
-| Tulsa, AL          |    1 |
-| Tulsa, OK          |  583 |
-| Washington, DC     | 1345 |
 
 #### Summarize within cities to obtain the number of unsolved homicides (those for which the disposition is “Closed without arrest” or “Open/No arrest”).
 
@@ -309,63 +253,89 @@ homicide_unsolved = homicide_df %>%
     homicide_statu =  ifelse(disposition != "Closed by arrest", "unsolved", "solved")) %>%
   group_by(city_state) %>% 
   summarize(
-    n_unsolved = sum(homicide_statu == "unsolved")) 
+    n_unsolved = sum(homicide_statu == "unsolved"),
+    n_total = n()) 
 homicide_unsolved %>% 
   knitr::kable()
 ```
 
-| city_state         | n_unsolved |
-|:-------------------|-----------:|
-| Albuquerque, NM    |        146 |
-| Atlanta, GA        |        373 |
-| Baltimore, MD      |       1825 |
-| Baton Rouge, LA    |        196 |
-| Birmingham, AL     |        347 |
-| Boston, MA         |        310 |
-| Buffalo, NY        |        319 |
-| Charlotte, NC      |        206 |
-| Chicago, IL        |       4073 |
-| Cincinnati, OH     |        309 |
-| Columbus, OH       |        575 |
-| Dallas, TX         |        754 |
-| Denver, CO         |        169 |
-| Detroit, MI        |       1482 |
-| Durham, NC         |        101 |
-| Fort Worth, TX     |        255 |
-| Fresno, CA         |        169 |
-| Houston, TX        |       1493 |
-| Indianapolis, IN   |        594 |
-| Jacksonville, FL   |        597 |
-| Kansas City, MO    |        486 |
-| Las Vegas, NV      |        572 |
-| Long Beach, CA     |        156 |
-| Los Angeles, CA    |       1106 |
-| Louisville, KY     |        261 |
-| Memphis, TN        |        483 |
-| Miami, FL          |        450 |
-| Milwaukee, wI      |        403 |
-| Minneapolis, MN    |        187 |
-| Nashville, TN      |        278 |
-| New Orleans, LA    |        930 |
-| New York, NY       |        243 |
-| Oakland, CA        |        508 |
-| Oklahoma City, OK  |        326 |
-| Omaha, NE          |        169 |
-| Philadelphia, PA   |       1360 |
-| Phoenix, AZ        |        504 |
-| Pittsburgh, PA     |        337 |
-| Richmond, VA       |        113 |
-| Sacramento, CA     |        139 |
-| San Antonio, TX    |        357 |
-| San Bernardino, CA |        170 |
-| San Diego, CA      |        175 |
-| San Francisco, CA  |        336 |
-| Savannah, GA       |        115 |
-| St. Louis, MO      |        905 |
-| Stockton, CA       |        266 |
-| Tampa, FL          |         95 |
-| Tulsa, AL          |          0 |
-| Tulsa, OK          |        193 |
-| Washington, DC     |        589 |
+| city_state         | n_unsolved | n_total |
+|:-------------------|-----------:|--------:|
+| Albuquerque, NM    |        146 |     378 |
+| Atlanta, GA        |        373 |     973 |
+| Baltimore, MD      |       1825 |    2827 |
+| Baton Rouge, LA    |        196 |     424 |
+| Birmingham, AL     |        347 |     800 |
+| Boston, MA         |        310 |     614 |
+| Buffalo, NY        |        319 |     521 |
+| Charlotte, NC      |        206 |     687 |
+| Chicago, IL        |       4073 |    5535 |
+| Cincinnati, OH     |        309 |     694 |
+| Columbus, OH       |        575 |    1084 |
+| Dallas, TX         |        754 |    1567 |
+| Denver, CO         |        169 |     312 |
+| Detroit, MI        |       1482 |    2519 |
+| Durham, NC         |        101 |     276 |
+| Fort Worth, TX     |        255 |     549 |
+| Fresno, CA         |        169 |     487 |
+| Houston, TX        |       1493 |    2942 |
+| Indianapolis, IN   |        594 |    1322 |
+| Jacksonville, FL   |        597 |    1168 |
+| Kansas City, MO    |        486 |    1190 |
+| Las Vegas, NV      |        572 |    1381 |
+| Long Beach, CA     |        156 |     378 |
+| Los Angeles, CA    |       1106 |    2257 |
+| Louisville, KY     |        261 |     576 |
+| Memphis, TN        |        483 |    1514 |
+| Miami, FL          |        450 |     744 |
+| Milwaukee, wI      |        403 |    1115 |
+| Minneapolis, MN    |        187 |     366 |
+| Nashville, TN      |        278 |     767 |
+| New Orleans, LA    |        930 |    1434 |
+| New York, NY       |        243 |     627 |
+| Oakland, CA        |        508 |     947 |
+| Oklahoma City, OK  |        326 |     672 |
+| Omaha, NE          |        169 |     409 |
+| Philadelphia, PA   |       1360 |    3037 |
+| Phoenix, AZ        |        504 |     914 |
+| Pittsburgh, PA     |        337 |     631 |
+| Richmond, VA       |        113 |     429 |
+| Sacramento, CA     |        139 |     376 |
+| San Antonio, TX    |        357 |     833 |
+| San Bernardino, CA |        170 |     275 |
+| San Diego, CA      |        175 |     461 |
+| San Francisco, CA  |        336 |     663 |
+| Savannah, GA       |        115 |     246 |
+| St. Louis, MO      |        905 |    1677 |
+| Stockton, CA       |        266 |     444 |
+| Tampa, FL          |         95 |     208 |
+| Tulsa, AL          |          0 |       1 |
+| Tulsa, OK          |        193 |     583 |
+| Washington, DC     |        589 |    1345 |
 
-#### 
+#### Estimate the proportion of homicides that are unsolved for the city of Baltimore, MD.
+
+``` r
+Bal_data = 
+  homicide_unsolved %>%
+  filter(city_state == "Baltimore, MD")
+
+Bal_test = 
+  prop.test(
+    x = Bal_data %>% pull(n_unsolved),
+    n = Bal_data %>% pull(n_total),
+    alternative = c("two.sided"), conf.level = 0.95) %>% 
+  broom::tidy() 
+Bal_test
+```
+
+    ## # A tibble: 1 × 8
+    ##   estimate statistic  p.value parameter conf.low conf.high method        alter…¹
+    ##      <dbl>     <dbl>    <dbl>     <int>    <dbl>     <dbl> <chr>         <chr>  
+    ## 1    0.646      239. 6.46e-54         1    0.628     0.663 1-sample pro… two.si…
+    ## # … with abbreviated variable name ¹​alternative
+
+According to the the resulting tidy dataframe, the estimated proportion
+of homicides that are unsolved for the city of Baltimore, MD is
+0.6455607, and the 95% confidence interval of which is
+(0.6275625,0.6631599).

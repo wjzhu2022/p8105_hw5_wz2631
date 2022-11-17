@@ -91,8 +91,6 @@ homicide_total = homicide_df %>%
   group_by(city_state) %>% 
   count(city_state) %>% 
   summarize(n) 
-homicide_total %>% 
-  knitr::kable()
 ```
 
 ####  Summarize within cities to obtain the number of unsolved homicides (those for which the disposition is “Closed without arrest” or “Open/No arrest”).
@@ -102,9 +100,26 @@ homicide_unsolved = homicide_df %>%
     homicide_statu =  ifelse(disposition != "Closed by arrest", "unsolved", "solved")) %>%
   group_by(city_state) %>% 
   summarize(
-    n_unsolved = sum(homicide_statu == "unsolved")) 
+    n_unsolved = sum(homicide_statu == "unsolved"),
+    n_total = n()) 
 homicide_unsolved %>% 
   knitr::kable()
 ```
 
-####
+#### Estimate the proportion of homicides that are unsolved for the city of Baltimore, MD.
+```{r}
+Bal_data = 
+  homicide_unsolved %>%
+  filter(city_state == "Baltimore, MD")
+
+Bal_test = 
+  prop.test(
+    x = Bal_data %>% pull(n_unsolved),
+    n = Bal_data %>% pull(n_total),
+    alternative = c("two.sided"), conf.level = 0.95) %>% 
+  broom::tidy() 
+Bal_test
+```
+According to the the resulting tidy dataframe, the estimated proportion of homicides that are unsolved for the city of Baltimore, MD is 0.6455607, and the 95% confidence interval of which is (0.6275625,0.6631599).
+
+
