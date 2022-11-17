@@ -441,3 +441,20 @@ All_test %>%
 <img src="homework5_files/figure-gfm/unnamed-chunk-11-1.png" width="90%" />
 
 ## Problem 3
+
+#### Define function “t_test”. Set μ=0, generating 5000 datasets from the model.
+
+``` r
+t_test = function(sample_size, mu, sigma) {
+  sample_data = tibble(
+    x = rnorm(n = sample_size, mean = mu, sd = sigma))
+   t_result = t.test(sample_data) %>% 
+    broom::tidy() %>% 
+    select(estimate,p.value)
+}
+t_test_0 = 
+  rerun(5000, t_test(sample_size = 30, mu = 0, sigma = 5)) %>% 
+  bind_rows
+```
+
+#### Repeat the above for μ={1,2,3,4,5,6}.
