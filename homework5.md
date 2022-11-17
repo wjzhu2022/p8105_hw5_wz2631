@@ -313,9 +313,16 @@ homicide_unsolved %>%
 | Tulsa, OK          |        193 |     583 |
 | Washington, DC     |        589 |    1345 |
 
+From the table, intriguingly, there are 51 city_state listed.
+Considering the city “Tulsa, AL” has no unsolved cases contributing to
+this data, it could be removed to create a more tidy database.
+
 #### Estimate the proportion of homicides that are unsolved for the city of Baltimore, MD.
 
 ``` r
+homicide_unsolved = homicide_unsolved %>%
+  filter(city_state != "Tulsa, AL") 
+
 Bal_data = 
   homicide_unsolved %>%
   filter(city_state == "Baltimore, MD")
@@ -339,3 +346,71 @@ According to the the resulting tidy dataframe, the estimated proportion
 of homicides that are unsolved for the city of Baltimore, MD is
 0.6455607, and the 95% confidence interval of which is
 (0.6275625,0.6631599).
+
+#### Estimate the proportion of homicides that are unsolved for each of the cities in dataset, creating a tidy dataframe with estimated proportions and CIs for each city.
+
+``` r
+All_test = 
+  homicide_unsolved %>%
+  mutate(
+    prop_test = map2(.x = n_unsolved, .y = n_total, ~prop.test(x = .x, n = .y)),
+    prop_test = map(prop_test, broom::tidy)
+    ) %>% 
+  unnest() %>% 
+  select(city_state, estimate, conf.low, conf.high)
+All_test %>% 
+  knitr::kable()
+```
+
+| city_state         |  estimate |  conf.low | conf.high |
+|:-------------------|----------:|----------:|----------:|
+| Albuquerque, NM    | 0.3862434 | 0.3372604 | 0.4375766 |
+| Atlanta, GA        | 0.3833505 | 0.3528119 | 0.4148219 |
+| Baltimore, MD      | 0.6455607 | 0.6275625 | 0.6631599 |
+| Baton Rouge, LA    | 0.4622642 | 0.4141987 | 0.5110240 |
+| Birmingham, AL     | 0.4337500 | 0.3991889 | 0.4689557 |
+| Boston, MA         | 0.5048860 | 0.4646219 | 0.5450881 |
+| Buffalo, NY        | 0.6122841 | 0.5687990 | 0.6540879 |
+| Charlotte, NC      | 0.2998544 | 0.2660820 | 0.3358999 |
+| Chicago, IL        | 0.7358627 | 0.7239959 | 0.7473998 |
+| Cincinnati, OH     | 0.4452450 | 0.4079606 | 0.4831439 |
+| Columbus, OH       | 0.5304428 | 0.5002167 | 0.5604506 |
+| Dallas, TX         | 0.4811742 | 0.4561942 | 0.5062475 |
+| Denver, CO         | 0.5416667 | 0.4846098 | 0.5976807 |
+| Detroit, MI        | 0.5883287 | 0.5687903 | 0.6075953 |
+| Durham, NC         | 0.3659420 | 0.3095874 | 0.4260936 |
+| Fort Worth, TX     | 0.4644809 | 0.4222542 | 0.5072119 |
+| Fresno, CA         | 0.3470226 | 0.3051013 | 0.3913963 |
+| Houston, TX        | 0.5074779 | 0.4892447 | 0.5256914 |
+| Indianapolis, IN   | 0.4493192 | 0.4223156 | 0.4766207 |
+| Jacksonville, FL   | 0.5111301 | 0.4820460 | 0.5401402 |
+| Kansas City, MO    | 0.4084034 | 0.3803996 | 0.4370054 |
+| Las Vegas, NV      | 0.4141926 | 0.3881284 | 0.4407395 |
+| Long Beach, CA     | 0.4126984 | 0.3629026 | 0.4642973 |
+| Los Angeles, CA    | 0.4900310 | 0.4692208 | 0.5108754 |
+| Louisville, KY     | 0.4531250 | 0.4120609 | 0.4948235 |
+| Memphis, TN        | 0.3190225 | 0.2957047 | 0.3432691 |
+| Miami, FL          | 0.6048387 | 0.5685783 | 0.6400015 |
+| Milwaukee, wI      | 0.3614350 | 0.3333172 | 0.3905194 |
+| Minneapolis, MN    | 0.5109290 | 0.4585150 | 0.5631099 |
+| Nashville, TN      | 0.3624511 | 0.3285592 | 0.3977401 |
+| New Orleans, LA    | 0.6485356 | 0.6231048 | 0.6731615 |
+| New York, NY       | 0.3875598 | 0.3494421 | 0.4270755 |
+| Oakland, CA        | 0.5364308 | 0.5040588 | 0.5685037 |
+| Oklahoma City, OK  | 0.4851190 | 0.4467861 | 0.5236245 |
+| Omaha, NE          | 0.4132029 | 0.3653146 | 0.4627477 |
+| Philadelphia, PA   | 0.4478103 | 0.4300380 | 0.4657157 |
+| Phoenix, AZ        | 0.5514223 | 0.5184825 | 0.5839244 |
+| Pittsburgh, PA     | 0.5340729 | 0.4942706 | 0.5734545 |
+| Richmond, VA       | 0.2634033 | 0.2228571 | 0.3082658 |
+| Sacramento, CA     | 0.3696809 | 0.3211559 | 0.4209131 |
+| San Antonio, TX    | 0.4285714 | 0.3947772 | 0.4630331 |
+| San Bernardino, CA | 0.6181818 | 0.5576628 | 0.6753422 |
+| San Diego, CA      | 0.3796095 | 0.3354259 | 0.4258315 |
+| San Francisco, CA  | 0.5067873 | 0.4680516 | 0.5454433 |
+| Savannah, GA       | 0.4674797 | 0.4041252 | 0.5318665 |
+| St. Louis, MO      | 0.5396541 | 0.5154369 | 0.5636879 |
+| Stockton, CA       | 0.5990991 | 0.5517145 | 0.6447418 |
+| Tampa, FL          | 0.4567308 | 0.3881009 | 0.5269851 |
+| Tulsa, OK          | 0.3310463 | 0.2932349 | 0.3711192 |
+| Washington, DC     | 0.4379182 | 0.4112495 | 0.4649455 |

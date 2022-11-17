@@ -8,6 +8,9 @@ output: github_document
 ```{r, include=FALSE}
 library(tidyverse)
 library(viridis)
+library(purrr)
+library(tidyr)
+library(broom)
 
 knitr::opts_chunk$set(
 	fig.height = 8,
@@ -105,9 +108,13 @@ homicide_unsolved = homicide_df %>%
 homicide_unsolved %>% 
   knitr::kable()
 ```
+From the table, intriguingly, there are 51 city_state listed. Considering the city "Tulsa, AL" has no unsolved cases contributing to this data, it could be removed to create a more tidy database.
 
 #### Estimate the proportion of homicides that are unsolved for the city of Baltimore, MD.
 ```{r}
+homicide_unsolved = homicide_unsolved %>%
+  filter(city_state != "Tulsa, AL") 
+
 Bal_data = 
   homicide_unsolved %>%
   filter(city_state == "Baltimore, MD")
@@ -121,5 +128,19 @@ Bal_test =
 Bal_test
 ```
 According to the the resulting tidy dataframe, the estimated proportion of homicides that are unsolved for the city of Baltimore, MD is 0.6455607, and the 95% confidence interval of which is (0.6275625,0.6631599).
+
+#### Estimate the proportion of homicides that are unsolved for each of the cities in dataset, creating a tidy dataframe with estimated proportions and CIs for each city.
+```{r}
+All_test = 
+  homicide_unsolved %>%
+  mutate(
+    prop_test = map2(.x = n_unsolved, .y = n_total, ~prop.test(x = .x, n = .y)),
+    prop_test = map(prop_test, broom::tidy)
+    ) %>% 
+  unnest() %>% 
+  select(city_state, estimate, conf.low, conf.high)
+All_test %>% 
+  knitr::kable()
+```
 
 
