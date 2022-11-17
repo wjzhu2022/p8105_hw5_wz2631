@@ -442,19 +442,81 @@ All_test %>%
 
 ## Problem 3
 
-#### Define function “t_test”. Set μ=0, generating 5000 datasets from the model.
+#### Define function “t_test” in the following chunk. Set μ=0, generating 5000 datasets from the model.
 
 ``` r
 t_test = function(sample_size, mu, sigma) {
   sample_data = tibble(
-    x = rnorm(n = sample_size, mean = mu, sd = sigma))
+    x = rnorm(n = sample_size, mean = mu, sd = sigma)
+    )
    t_result = t.test(sample_data) %>% 
     broom::tidy() %>% 
     select(estimate,p.value)
 }
-t_test_0 = 
+
+t_test_1 = 
   rerun(5000, t_test(sample_size = 30, mu = 0, sigma = 5)) %>% 
   bind_rows
+t_test_1
 ```
 
-#### Repeat the above for μ={1,2,3,4,5,6}.
+    ## # A tibble: 5,000 × 2
+    ##    estimate p.value
+    ##       <dbl>   <dbl>
+    ##  1   -0.603  0.482 
+    ##  2    0.812  0.392 
+    ##  3    0.315  0.734 
+    ##  4   -0.862  0.373 
+    ##  5    1.83   0.0601
+    ##  6   -0.989  0.346 
+    ##  7    0.757  0.330 
+    ##  8   -0.671  0.297 
+    ##  9   -0.442  0.553 
+    ## 10    0.557  0.501 
+    ## # … with 4,990 more rows
+
+#### Repeat the above for μ={1,2,3,4,5,6} by iteration.
+
+``` r
+t_test_2 = 
+  expand_grid(
+    miu = c(1:6),
+    iteration = 1:5000) %>%
+  mutate(
+    estimate_2 = map(.x = miu, ~t_test(sample_size = 30, mu = .x, sigma = 5))
+  ) %>%
+  unnest(estimate_2) %>% 
+  mutate(
+    reject_HO = ifelse(p.value < 0.05, 1, 0)) 
+```
+
+#### Make a plot showing the proportion of times the null was rejected (the power of the test) on the y axis and the true value of μ
+
+on the x axis. Describe the association between effect size and power.
+
+``` r
+t_test_2_data =
+  t_test_2 %>%
+    group_by(miu) %>% 
+    summarise(
+      count_2 = sum(reject_HO == 1))
+
+plot_2 = 
+  t_test_2_data %>%
+  ggplot(aes(x = miu, y = count_2/5000)) +
+  geom_point() +
+  geom_line() +
+  labs(
+    x = "True value of mean",
+    y = "Power of the test",
+    title = "Association between effect size and power") +
+    theme(plot.title = element_text(size = 10),text = element_text(size = 6)) 
+plot_2
+```
+
+<img src="homework5_files/figure-gfm/unnamed-chunk-14-1.png" width="90%" />
+According to the figure, the power of the test increases as the true
+value of mean increases.There is a positive association between effect
+size and power.
+
+#### Make a plot showing the average estimate of estimated μ on the y axis and the true value of μ on the x axis.
